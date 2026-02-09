@@ -1,0 +1,4 @@
+product_id,size,chest_min,chest_max,waist_min,waist_max
+shirt-classic,S,88,94,78,84
+shirt-classic,M,95,101,85,91
+shirt-classic,L,102,108,92,98
