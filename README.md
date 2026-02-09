@@ -1,8 +1,7 @@
-This is a comprehensive README.md file for your project. It’s written in English, professional yet accessible, and covers the specific technical requirements we discussed (CSV data, Bootstrap, M2M logic, and the Dev mode).
-📏 Virtual Tailor: Size Recommendation Engine
+## 📏 Virtual Tailor: Size Recommendation Engine
 
 An intelligent web application built with Next.js and React that helps customers find their perfect fit. By entering detailed body measurements, users receive precise size recommendations based on product-specific data, with a visual scale showing exactly where they land within a size range.
-🚀 Features
+## 🚀 Features
 
     Dynamic Measurement Form: Only asks for measurements relevant to the selected product (e.g., neck for shirts, inseam for trousers).
 
@@ -16,7 +15,7 @@ An intelligent web application built with Next.js and React that helps customers
 
     Developer Mode: A dedicated "Dev Switch" to instantly populate the form with test data for rapid UI/UX testing.
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 
     Framework: Next.js 14+ (App Router)
 
@@ -28,7 +27,7 @@ An intelligent web application built with Next.js and React that helps customers
 
     Icons: Lucide React
 
-📊 Data Structure
+## 📊 Data Structure
 
 The application consumes data from a CSV file located in the /public/data directory.
 CSV Schema Example
@@ -42,7 +41,7 @@ shirt-slim-01,Shirt,L,101,106,91,96,66,68
 
     M2M Logic: If user_value > max or user_value < min for all available sizes, the M2M trigger is activated.
 
-🔧 Installation & Setup
+## 🔧 Installation & Setup
 
     Clone the repository:
     Bash
@@ -62,7 +61,7 @@ shirt-slim-01,Shirt,L,101,106,91,96,66,68
 
     Access the app: Open http://localhost:3000 in your browser.
 
-🧪 Development Workflow
+## 🧪 Development Workflow
 The "Dev Switch"
 
 To speed up testing, the app includes a debug toggle. When enabled:
@@ -76,7 +75,7 @@ To speed up testing, the app includes a debug toggle. When enabled:
 Exporting Data
 
 Users can click the "Export My Profile" button, which generates a tailor-measurements.json. This ensures users don't have to measure themselves twice if they return to the shop later.
-🗺️ Roadmap
+## 🗺️ Roadmap
 
     [ ] Integrate PDF export for M2M requests.
 
