@@ -6,129 +6,85 @@ import { Ruler, Download, HelpCircle, Check, Info } from 'lucide-react';
 
 // --- KONFIGURACE DAT ---
 
-// Definice všech možných měření s kódy
+// Definition of all possible measurements with codes
 const MEASUREMENT_DEFS = {
-  'A': { id: 'head', label: 'Obvod hlavy', description: 'Měřte v nejširším místě přes čelo.' },
-  'B': { id: 'neck', label: 'Obvod krku', description: 'Měřte u kořene krku, nad klíčními kostmi.' },
-  'C': { id: 'shoulder', label: 'Šíře ramen', description: 'Od ramenního kloubu k druhému přes záda.' },
-  'D': { id: 'chest', label: 'Obvod hrudníku', description: 'Přes nejširší místo prsou, v podpaží.' },
-  'E': { id: 'waist', label: 'Obvod pasu', description: 'V nejužším místě trupu, nad pupíkem.' },
-  'F': { id: 'hips', label: 'Obvod boků', description: 'Přes nejširší část hýždí.' },
-  'G': { id: 'arm_length', label: 'Délka ruky', description: 'Od ramenního kloubu po zápěstí, ruka mírně pokrčená.' },
-  'H': { id: 'thigh', label: 'Obvod stehna', description: 'V nejširším místě stehna.' },
-  'I': { id: 'inseam', label: 'Vnitřní délka nohy', description: 'Od rozkroku po kotník.' },
+  '1': { id: 'around_neck', label: 'Around neck', description: 'Measurement around the neck.' },
+  '2': { id: 'neck_to_ankle', label: 'Neck to ankle', description: 'Measurement from neck to ankle.' },
+  '3': { id: 'neck_to_crotch', label: 'Neck to crotch', description: 'Measurement from neck to crotch.' },
+  '4': { id: 'neck_to_wrist', label: 'Neck to wrist', description: 'Measurement from neck to wrist.' },
+  '5': { id: 'armpit_to_wrist', label: 'Armpit to wrist', description: 'Measurement from armpit to wrist.' },
+  '6': { id: 'around_wrist', label: 'Around wrist', description: 'Measurement around the wrist.' },
+  '7': { id: 'shoulder_to_elbow', label: 'Shoulder to elbow', description: 'Measurement from shoulder to elbow.' },
+  '8': { id: 'elbow_to_wrist', label: 'Elbow to wrist', description: 'Measurement from elbow to wrist.' },
+  '9': { id: 'crotch_to_knee', label: 'Crotch to knee', description: 'Measurement from crotch to knee.' },
+  '10': { id: 'knee_to_ankle', label: 'Knee to ankle', description: 'Measurement from knee to ankle.' },
+  '11': { id: 'around_knee', label: 'Around knee', description: 'Measurement around the knee.' },
+  '12': { id: 'around_shin', label: 'Around shin', description: 'Measurement around the shin.' },
+  '13': { id: 'around_ankle', label: 'Around ankle', description: 'Measurement around the ankle.' },
+  '14': { id: 'shoulder_to_shoulder', label: 'Shoulder to shoulder', description: 'Measurement from shoulder to shoulder.' },
+  '15': { id: 'around_shoulder', label: 'Around shoulder', description: 'Measurement around the shoulder.' },
+  '16': { id: 'neck_to_tailbone', label: 'Neck to tailbone/end of buttcrack', description: 'Measurement from neck to tailbone.' },
+  '17': { id: 'around_bicep', label: 'Around bicep', description: 'Measurement around the bicep.' },
+  '18': { id: 'around_elbow', label: 'Around elbow', description: 'Measurement around the elbow.' },
+  '19': { id: 'around_chest', label: 'Around chest', description: 'Measurement around the chest.' },
+  '20': { id: 'around_bust', label: 'Around bust', description: 'Measurement around the bust.' },
+  '21': { id: 'around_stomach', label: 'Around stomach', description: 'Measurement around the stomach.' },
+  '22': { id: 'around_hips', label: 'Around hips', description: 'Measurement around the hips.' },
+  '23': { id: 'crotch_to_ankle', label: 'Crotch to ankle', description: 'Measurement from crotch to ankle.' },
+  '24': { id: 'around_thigh', label: 'Around thigh', description: 'Measurement around the thigh.' },
+  '25': { id: 'around_calf', label: 'Around calf', description: 'Measurement around the calf.' },
+  '26': { id: 'width_of_hand', label: 'Width of hand', description: 'Measurement of the width of the hand.' },
+  '27': { id: 'wrist_to_middle_finger_tip', label: 'Wrist to middle finger tip', description: 'Measurement from wrist to middle finger tip.' },
+  '28': { id: 'around_fingers', label: 'Around fingers (average thickness)', description: 'Average thickness around fingers.' },
 };
 
-// Definice produktových řad a jejich vyžadovaných měření
+// Definition of product lines and their required measurements
 const PRODUCT_LINES = [
-  { id: 'tunic', name: 'Základní Tunika', requirements: ['B', 'C', 'D', 'E', 'G'] },
-  { id: 'trousers', name: 'Kalhoty / Nohavice', requirements: ['E', 'F', 'H', 'I'] },
-  { id: 'hood', name: 'Kápě / Pokrývka hlavy', requirements: ['A', 'B'] },
-  { id: 'gambeson', name: 'Prošívanice (Gambeson)', requirements: ['B', 'C', 'D', 'E', 'F', 'G'] },
+  { id: 'tunic', name: 'Basic Tunic', requirements: ['1', '4', '14', '19', '21'] },
+  { id: 'trousers', name: 'Trousers / Pants', requirements: ['21', '22', '23', '24'] },
+  { id: 'hood', name: 'Hood / Headgear', requirements: ['1', '14'] },
+  { id: 'gambeson', name: 'Gambeson (Padded Jack)', requirements: ['1', '4', '14', '19', '21', '22'] },
 ];
 
 /**
- * Komponenta BodyVisualizer
- * Načte tvůj obrázek (body.png) a vykresluje interaktivní čáry.
+ * BodyVisualizer Component
+ * Loads the body image and swaps it based on the active measurement code.
  */
 const BodyVisualizer = ({ activeCode }) => {
-  // Barvy
-  const strokeDefault = "#e9ecef";
-  const strokeActive = "#0d6efd"; // Bootstrap primary blue
-  const strokeWidth = 5;
-
-  // Pomocná funkce pro barvu čáry
-  const getStroke = (code) => activeCode === code ? strokeActive : strokeDefault;
-  const getOpacity = (code) => activeCode === code ? 1 : 0.4;
-  const getZ = (code) => activeCode === code ? 10 : 1;
+  // Map the active measurement code to a specific image file
+  const getImageSource = () => {
+    if (!activeCode) return '/body.png';
+    return `/body-${activeCode}.png`;
+  };
 
   return (
-    <div className="position-relative w-100 h-100 d-flex justify-content-center">
-      <svg viewBox="0 0 400 600" className="w-100 h-auto" style={{ maxHeight: '600px', maxWidth: '400px' }}>
-        
-        {/* --- TVŮJ OBRÁZEK --- 
-           Aby to fungovalo, ujisti se, že máš soubor 'body.png' v složce 'public' v projektu. 
-        */}
-        <image 
-          href="/body.png" 
-          x="0" 
-          y="0" 
-          width="400" 
-          height="600" 
-          preserveAspectRatio="xMidYMid slice" // Ořezává obrázek, aby se vešel
-          opacity="0.2" // Ztmavíme, aby čáry vynikly. Můžeš zvýšit na 1.
-        />
-        
-        {/* Fallback pro případ, že obrázek chybí - jednoduchý obrys */}
-        <path d="M200,50 Q230,50 230,80 Q230,110 200,110 Q170,110 170,80 Q170,50 200,50 M170,95 L140,110 L90,110 L80,250 L100,260 L120,180 L120,250 L110,400 L130,580 L190,580 L195,400 L205,400 L210,580 L270,580 L290,400 L280,250 L280,180 L300,260 L320,250 L310,110 L260,110 L230,95" 
-          fill="none" stroke="#adb5bd" strokeWidth="2" opacity="0.1" 
-        />
-
-        {/* --- MĚŘÍCÍ ČÁRY (PŘIZPŮSOBENÉ NA FORMÁT 400x600) --- */}
-        
-        {/* A - Hlava (výška cca 80) */}
-        <ellipse cx="200" cy="80" rx="35" ry="12" 
-          fill="none" stroke={getStroke('A')} strokeWidth={strokeWidth} opacity={getOpacity('A')} 
-        />
-        
-        {/* B - Krk (výška cca 115) */}
-        <path d="M180,115 Q200,125 220,115" 
-          fill="none" stroke={getStroke('B')} strokeWidth={strokeWidth} opacity={getOpacity('B')} 
-        />
-
-        {/* C - Ramena (výška cca 130) */}
-        <line x1="140" y1="130" x2="260" y2="130" 
-          stroke={getStroke('C')} strokeWidth={strokeWidth} opacity={getOpacity('C')} strokeLinecap="round" 
-        />
-
-        {/* D - Hrudník (výška cca 180) */}
-        <path d="M130,180 Q200,195 270,180" 
-          fill="none" stroke={getStroke('D')} strokeWidth={strokeWidth} opacity={getOpacity('D')} 
-        />
-
-        {/* E - Pas (výška cca 250) */}
-        <path d="M125,250 Q200,265 275,250" 
-          fill="none" stroke={getStroke('E')} strokeWidth={strokeWidth} opacity={getOpacity('E')} 
-        />
-
-        {/* F - Boky (výška cca 310) */}
-        <path d="M115,310 Q200,325 285,310" 
-          fill="none" stroke={getStroke('F')} strokeWidth={strokeWidth} opacity={getOpacity('F')} 
-        />
-
-        {/* G - Ruka (délka) - od ramene (140,130) k zápěstí (80,250) */}
-        <path d="M260,130 Q300,180 320,250"
-          fill="none" stroke={getStroke('G')} strokeWidth={strokeWidth} opacity={getOpacity('G')} strokeDasharray="5,5"
-        />
-
-        {/* H - Stehno (výška cca 360, levá noha z pohledu diváka) */}
-        <path d="M115,360 Q150,370 185,360" 
-          fill="none" stroke={getStroke('H')} strokeWidth={strokeWidth} opacity={getOpacity('H')} 
-        />
-
-        {/* I - Vnitřní noha (výška cca 340 až 580) */}
-        <line x1="195" y1="340" x2="195" y2="580" 
-          stroke={getStroke('I')} strokeWidth={strokeWidth} opacity={getOpacity('I')} strokeDasharray="5,5"
-        />
-        
-        {/* Popisky k čarám (zobrazí se jen když je aktivní) */}
-        {activeCode && (
-          <text x="20" y="40" fill="#0d6efd" fontSize="24" fontWeight="bold">
-            {activeCode} - {MEASUREMENT_DEFS[activeCode].label}
-          </text>
-        )}
-      </svg>
+    <div className="position-relative w-100 h-100 d-flex justify-content-center align-items-center bg-light">
+      <img 
+        src={getImageSource()} 
+        alt={`Measurement ${activeCode ? MEASUREMENT_DEFS[activeCode].label : 'default'}`} 
+        style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+        onError={(e) => {
+          // Fallback to default body if specific image is not found
+          e.target.onerror = null;
+          e.target.src = '/body.png';
+        }}
+      />
+      {activeCode && (
+        <div className="position-absolute top-0 start-0 m-3 p-2 bg-white border rounded shadow-sm" style={{ zIndex: 10 }}>
+          <strong className="text-primary">{activeCode}</strong> - {MEASUREMENT_DEFS[activeCode].label}
+        </div>
+      )}
     </div>
   );
 };
 
 export default function App() {
-  const [selectedProducts, setSelectedProducts] = useState(['tunic']); // Defaultně vybrána tunika
-  const [activeMeasurement, setActiveMeasurement] = useState(null); // Které pole je právě "focused"
-  const [measurements, setMeasurements] = useState({}); // Uložené hodnoty
+  const [selectedProducts, setSelectedProducts] = useState(['tunic']); // Tunic selected by default
+  const [activeMeasurement, setActiveMeasurement] = useState(null); // Which field is currently focused
+  const [measurements, setMeasurements] = useState({}); // Saved values
   const [devMode, setDevMode] = useState(false);
 
-  // Vypočítá unikátní seznam potřebných měření podle vybraných produktů
+  // Calculates unique list of required measurements based on selected products
   const requiredMeasurements = useMemo(() => {
     const codes = new Set();
     selectedProducts.forEach(prodId => {
@@ -137,8 +93,8 @@ export default function App() {
         product.requirements.forEach(r => codes.add(r));
       }
     });
-    // Seřadíme abecedně (A, B, C...)
-    return Array.from(codes).sort();
+    // Sort numerically rather than alphabetically
+    return Array.from(codes).sort((a, b) => parseInt(a) - parseInt(b));
   }, [selectedProducts]);
 
   const toggleProduct = (prodId) => {
@@ -169,9 +125,11 @@ export default function App() {
 
   useEffect(() => {
     if (devMode) {
-      setMeasurements({
-        'A': '58', 'B': '42', 'C': '48', 'D': '102', 'E': '90', 'F': '105', 'G': '65', 'H': '60', 'I': '82'
-      });
+      const mockData = {};
+      for (let i = 1; i <= 28; i++) {
+        mockData[i.toString()] = (Math.floor(Math.random() * 40) + 40).toString();
+      }
+      setMeasurements(mockData);
     }
   }, [devMode]);
 
@@ -182,8 +140,8 @@ export default function App() {
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3">
           <div>
-            <h1 className="h2 fw-bold mb-0 text-dark">Konfigurátor Měření</h1>
-            <p className="text-muted small mb-0">Vyberte produkty a zadejte potřebné míry pro zakázkovou výrobu.</p>
+            <h1 className="h2 fw-bold mb-0 text-dark">Measurement Configurator</h1>
+            <p className="text-muted small mb-0">Select products and enter the necessary measurements for custom tailoring.</p>
           </div>
           <div className="d-flex gap-3 align-items-center">
              <Form.Check 
@@ -195,23 +153,23 @@ export default function App() {
               />
             <Button variant="outline-dark" size="sm" onClick={handleDownloadJson}>
               <Download size={16} className="me-2" />
-              Stáhnout JSON
+              Download JSON
             </Button>
           </div>
         </div>
 
-        {/* 1. KROK: Výběr produktů (Tabulka) */}
+        {/* STEP 1: Product Selection (Table) */}
         <Card className="border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
           <Card.Header className="bg-white p-4 border-bottom">
-            <h5 className="fw-bold m-0">1. O co máte zájem?</h5>
+            <h5 className="fw-bold m-0">1. What are you interested in?</h5>
           </Card.Header>
           <div className="table-responsive">
             <Table hover className="mb-0 align-middle">
               <thead className="bg-light">
                 <tr>
-                  <th className="ps-4 py-3 text-muted text-uppercase small" style={{ width: '40%' }}>Název produktové řady</th>
-                  <th className="text-center py-3 text-muted text-uppercase small" style={{ width: '20%' }}>Mám zájem</th>
-                  <th className="pe-4 py-3 text-muted text-uppercase small text-end" style={{ width: '40%' }}>Potřebné značky</th>
+                  <th className="ps-4 py-3 text-muted text-uppercase small" style={{ width: '40%' }}>Product Line</th>
+                  <th className="text-center py-3 text-muted text-uppercase small" style={{ width: '20%' }}>Interested</th>
+                  <th className="pe-4 py-3 text-muted text-uppercase small text-end" style={{ width: '40%' }}>Required measurements</th>
                 </tr>
               </thead>
               <tbody>
@@ -246,15 +204,15 @@ export default function App() {
           {selectedProducts.length === 0 && (
              <div className="p-3 text-center text-muted bg-light small">
                <Info size={16} className="me-2"/>
-               Vyberte alespoň jeden produkt pro zobrazení formuláře měření.
+               Select at least one product to display the measurement form.
              </div>
           )}
         </Card>
 
-        {/* 2. KROK: Měření (Split View) */}
+        {/* STEP 2: Measurements (Split View) */}
         {selectedProducts.length > 0 && (
           <Row className="g-4">
-            {/* Levá strana - Vizuál */}
+            {/* Left side - Visuals */}
             <Col lg={5} className="d-none d-lg-block">
               <Card className="border-0 shadow-sm rounded-4 h-100 position-sticky" style={{ top: '20px' }}>
                 <Card.Body className="d-flex flex-column align-items-center justify-content-center bg-white rounded-4 p-0 overflow-hidden">
@@ -265,14 +223,14 @@ export default function App() {
               </Card>
             </Col>
 
-            {/* Pravá strana - Inputy */}
+            {/* Right side - Inputs */}
             <Col lg={7}>
               <Card className="border-0 shadow-sm rounded-4 bg-white">
                 <Card.Header className="bg-white p-4 border-bottom">
                   <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="fw-bold m-0">2. Zadejte své míry</h5>
+                    <h5 className="fw-bold m-0">2. Enter your measurements</h5>
                     <Badge bg="light" text="dark" className="border">
-                      {requiredMeasurements.length} položek k vyplnění
+                      {requiredMeasurements.length} items to fill
                     </Badge>
                   </div>
                 </Card.Header>
@@ -327,7 +285,7 @@ export default function App() {
                     <div className="mt-5 d-grid">
                       <Button variant="dark" size="lg" className="py-3 rounded-pill fw-bold">
                         <Check size={20} className="me-2" />
-                        Odeslat měření
+                        Submit measurements
                       </Button>
                     </div>
                   </Form>

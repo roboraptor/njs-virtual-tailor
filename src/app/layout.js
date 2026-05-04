@@ -4,7 +4,7 @@ import "./globals.css"; // Tvoje vlastní styly
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="cs">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );
